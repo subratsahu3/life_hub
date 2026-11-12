@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar, NavTab } from './components/Navbar';
+import { MobileBottomNav } from './components/MobileBottomNav';
 import { DashboardView } from './views/DashboardView';
 import { ProductivityView } from './views/ProductivityView';
 import { EnergyView } from './views/EnergyView';
@@ -24,11 +25,16 @@ import {
   CommunitySummary,
   DashboardOverview,
 } from './types';
+import { Smartphone, Download, Check, X } from 'lucide-react';
 
 export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<NavTab>('dashboard');
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // PWA install state
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [showInstallModal, setShowInstallModal] = useState(false);
 
   // States
   const [overview, setOverview] = useState<DashboardOverview | null>(null);
@@ -46,6 +52,29 @@ export const App: React.FC = () => {
   const [financeSummary, setFinanceSummary] = useState<FinanceSummary | null>(null);
   const [communityPosts, setCommunityPosts] = useState<CommunityPost[]>([]);
   const [communitySummary, setCommunitySummary] = useState<CommunitySummary | null>(null);
+
+  useEffect(() => {
+    const handleBeforeInstall = (e: any) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+    window.addEventListener('beforeinstallprompt', handleBeforeInstall);
+    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
+  }, []);
+
+  const handleInstallClick = () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((choiceResult: any) => {
+        if (choiceResult.outcome === 'accepted') {
+          showToast('Installing Life-Hub app...');
+        }
+        setDeferredPrompt(null);
+      });
+    } else {
+      setShowInstallModal(true);
+    }
+  };
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -117,7 +146,7 @@ export const App: React.FC = () => {
     loadAllData();
   }, []);
 
-  // --- Handlers ---
+  // Handlers
   const handleToggleHabit = async (id: number) => {
     try {
       const updated = await api.toggleHabit(id);
@@ -127,7 +156,6 @@ export const App: React.FC = () => {
           ? `Habit marked done! Streak: ${updated.current_streak} days 🔥`
           : 'Habit unmarked for today.'
       );
-      // Refresh dashboard overview
       api.getDashboard().then((d) => setOverview(d));
     } catch (e) {
       showToast('Could not update habit.');
@@ -386,7 +414,7 @@ export const App: React.FC = () => {
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-cyan-500 selection:text-slate-950">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 px-4 py-3 rounded-xl bg-slate-800 text-white border border-slate-700 shadow-2xl text-xs font-semibold flex items-center space-x-2 animate-bounce">
+        <div className="fixed bottom-20 md:bottom-6 right-4 sm:right-6 z-50 px-4 py-2.5 sm:py-3 rounded-xl bg-slate-800/95 backdrop-blur-md text-white border border-slate-700 shadow-2xl text-xs font-semibold flex items-center space-x-2 animate-bounce">
           <span className="w-2 h-2 rounded-full bg-cyan-400"></span>
           <span>{toastMessage}</span>
         </div>
@@ -399,10 +427,12 @@ export const App: React.FC = () => {
         onRefresh={loadAllData}
         isRefreshing={isRefreshing}
         harmonyScore={overview?.harmony_score || 85}
+        onInstallClick={handleInstallClick}
+        showInstallBtn={true}
       />
 
-      {/* Main Content View */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      {/* Main Content View with extra padding on mobile for bottom navigation */}
+      <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 pb-24 md:pb-8">
         {activeTab === 'dashboard' && (
           <DashboardView
             overview={overview}
@@ -476,16 +506,62 @@ export const App: React.FC = () => {
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-slate-900 bg-slate-950 py-6 text-center text-xs text-slate-500">
+      {/* Mobile Native Bottom Navigation */}
+      <MobileBottomNav activeTab={activeTab} onSelectTab={setActiveTab} />
+
+      {/* Install Mobile App Guidance Modal */}
+      {showInstallModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-sm p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2 text-cyan-400">
+                <Smartphone className="w-5 h-5" />
+                <h3 className="text-base font-bold text-white">Install on Mobile Phone</h3>
+              </div>
+              <button
+                onClick={() => setShowInstallModal(false)}
+                className="text-slate-400 hover:text-white p-1"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <p className="text-xs text-slate-300 leading-relaxed">
+              Life-Hub is an installable PWA App. You can install it directly onto any Android or iOS device to get a full-screen, standalone app experience with zero browser address bars:
+            </p>
+
+            <div className="space-y-2.5 text-xs">
+              <div className="p-3 rounded-xl bg-slate-850 border border-slate-800">
+                <span className="font-bold text-white block mb-0.5">Android (Chrome / Brave / Edge):</span>
+                <span className="text-slate-400">Tap the three dots (⋮) in the top-right corner, then tap <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong>.</span>
+              </div>
+
+              <div className="p-3 rounded-xl bg-slate-850 border border-slate-800">
+                <span className="font-bold text-white block mb-0.5">iPhone / iPad (Safari):</span>
+                <span className="text-slate-400">Tap the Share icon (↑), scroll down and tap <strong>"Add to Home Screen"</strong>.</span>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setShowInstallModal(false)}
+              className="w-full py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs shadow-md transition-all"
+            >
+              Got it!
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Footer (Desktop only) */}
+      <footer className="hidden md:block border-t border-slate-900 bg-slate-950 py-6 text-center text-xs text-slate-500">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <div className="flex items-center space-x-2">
             <span className="font-bold text-slate-300">Life-Hub</span>
             <span>•</span>
-            <span>All-In-One Daily OS</span>
+            <span>Adaptive for All Displays & Phones</span>
           </div>
           <div className="text-[11px] text-slate-500">
-            Powered by FastAPI & React + Vite • Stored in SQLite • Active Path: D:\Subrat\life_hub
+            PWA & Android Compatible • D:\Subrat\life_hub
           </div>
         </div>
       </footer>

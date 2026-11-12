@@ -7,6 +7,7 @@ import {
   Wallet,
   Users,
   RefreshCw,
+  Download,
 } from 'lucide-react';
 
 export type NavTab = 'dashboard' | 'productivity' | 'energy' | 'health' | 'finance' | 'community';
@@ -17,6 +18,8 @@ interface NavbarProps {
   onRefresh: () => void;
   isRefreshing: boolean;
   harmonyScore: number;
+  onInstallClick?: () => void;
+  showInstallBtn?: boolean;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -25,6 +28,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onRefresh,
   isRefreshing,
   harmonyScore,
+  onInstallClick,
+  showInstallBtn,
 }) => {
   const tabs = [
     { id: 'dashboard' as NavTab, label: 'Dashboard', icon: LayoutDashboard },
@@ -42,28 +47,28 @@ export const Navbar: React.FC<NavbarProps> = ({
   });
 
   return (
-    <header className="sticky top-0 z-50 backdrop-blur-md bg-slate-900/90 border-b border-slate-800 text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+    <header className="sticky top-0 z-40 backdrop-blur-md bg-slate-900/90 border-b border-slate-800 text-white pt-[env(safe-area-inset-top)]">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-14 sm:h-16">
           {/* Logo */}
-          <div className="flex items-center space-x-3 cursor-pointer" onClick={() => onSelectTab('dashboard')}>
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-indigo-500 to-emerald-400 flex items-center justify-center shadow-lg shadow-cyan-500/20">
-              <span className="text-xl font-black text-white tracking-wider">LH</span>
+          <div className="flex items-center space-x-2.5 cursor-pointer" onClick={() => onSelectTab('dashboard')}>
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-indigo-500 to-emerald-400 flex items-center justify-center shadow-lg shadow-cyan-500/20">
+              <span className="text-base sm:text-lg font-black text-white tracking-wider">LH</span>
             </div>
             <div>
-              <div className="flex items-center space-x-2">
-                <span className="font-bold text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
+              <div className="flex items-center space-x-1.5 sm:space-x-2">
+                <span className="font-bold text-base sm:text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
                   Life-Hub
                 </span>
-                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                  v1.0 Live
+                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                  Live
                 </span>
               </div>
-              <p className="text-xs text-slate-400 hidden sm:block">Unified Daily OS</p>
+              <p className="text-[10px] sm:text-xs text-slate-400 hidden sm:block">Unified Daily OS</p>
             </div>
           </div>
 
-          {/* Nav Items */}
+          {/* Desktop Nav Items */}
           <nav className="hidden md:flex space-x-1 lg:space-x-2">
             {tabs.map((tab) => {
               const Icon = tab.icon;
@@ -85,46 +90,36 @@ export const Navbar: React.FC<NavbarProps> = ({
             })}
           </nav>
 
-          {/* Right meta controls */}
-          <div className="flex items-center space-x-3">
-            <div className="hidden sm:flex flex-col text-right">
-              <span className="text-xs font-medium text-slate-300">{currentDate}</span>
-              <span className="text-[11px] text-emerald-400 font-semibold flex items-center justify-end space-x-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span>Harmony {harmonyScore}%</span>
-              </span>
+          {/* Right Controls */}
+          <div className="flex items-center space-x-2 sm:space-x-3">
+            {/* Harmony Pill (Compact on Mobile) */}
+            <div className="flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-slate-850 border border-slate-700/60 text-xs">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span className="font-semibold text-emerald-300">{harmonyScore}%</span>
+              <span className="text-slate-400 hidden sm:inline">Rhythm</span>
             </div>
 
+            {/* Install App Button */}
+            {onInstallClick && (
+              <button
+                onClick={onInstallClick}
+                className="flex items-center space-x-1 px-2.5 py-1.5 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 border border-cyan-500/30 text-xs font-semibold transition-all"
+                title="Install Life-Hub App on Phone / Desktop"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Install App</span>
+              </button>
+            )}
+
+            {/* Refresh */}
             <button
               onClick={onRefresh}
               title="Refresh all metrics"
-              className="p-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700/60 transition-all"
+              className="p-1.5 sm:p-2 rounded-lg bg-slate-850 hover:bg-slate-750 text-slate-300 hover:text-white border border-slate-700/60 transition-all"
             >
-              <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin text-cyan-400' : ''}`} />
+              <RefreshCw className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isRefreshing ? 'animate-spin text-cyan-400' : ''}`} />
             </button>
           </div>
-        </div>
-
-        {/* Mobile scrollable tabs */}
-        <div className="flex md:hidden overflow-x-auto py-2 space-x-2 border-t border-slate-800/60 no-scrollbar">
-          {tabs.map((tab) => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => onSelectTab(tab.id)}
-                className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-xs font-medium whitespace-nowrap transition-colors ${
-                  isActive
-                    ? 'bg-indigo-600 text-white'
-                    : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-                }`}
-              >
-                <Icon className="w-3.5 h-3.5" />
-                <span>{tab.label}</span>
-              </button>
-            );
-          })}
         </div>
       </div>
     </header>
