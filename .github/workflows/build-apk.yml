@@ -46,6 +46,8 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.5'
 
       - name: Accept Android Licenses
         run: |
@@ -54,7 +56,7 @@ jobs:
       - name: Build Android APK
         working-directory: android
         run: |
-          gradle assembleDebug --no-daemon --stacktrace
+          gradle assembleDebug --stacktrace --no-daemon
 
       - name: Prepare Release Artifacts
         run: |
