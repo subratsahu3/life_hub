@@ -2,6 +2,24 @@
 
 > **A holistic, cross-domain platform uniting Personal Productivity, Home Automation & Energy Saving, Health & Nutrition, Personal Finance, and Neighborhood Mutual Aid under a single unified intelligence engine.**
 
+[![Deploy to GitHub Pages](https://github.com/subratsahu3/life_hub/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/subratsahu3/life_hub/actions/workflows/deploy-pages.yml)
+[![Build Android APK Release](https://github.com/subratsahu3/life_hub/actions/workflows/build-apk.yml/badge.svg)](https://github.com/subratsahu3/life_hub/actions/workflows/build-apk.yml)
+
+---
+
+## 🌐 Live Public Access & Downloads
+
+- 🔗 **Live Web Application (Accessible Anywhere):**  
+  👉 **[https://subratsahu3.github.io/life_hub/](https://subratsahu3.github.io/life_hub/)**  
+  *(Works smoothly on any smartphone, iPhone, Android, tablet, or PC browser with offline persistence!)*
+
+- 📱 **Download Android Release APK:**  
+  👉 **[Download Latest APK from Releases](https://github.com/subratsahu3/life_hub/releases/latest)**  
+  *(Direct `.apk` file for Android phones and tablets, optimized for all display sizes).*
+
+- 📂 **Source Code Repository:**  
+  👉 **[https://github.com/subratsahu3/life_hub](https://github.com/subratsahu3/life_hub)**
+
 ---
 
 ## 🎯 The Core Innovation: Why Life-Hub?
@@ -47,22 +65,32 @@ Modern daily life is fractured across a dozen isolated apps:
 
 ---
 
+## 📱 Mobile Phone & All-Display-Size Adaptation
+
+- 📱 **Native Mobile Bottom Navigation Bar**: Easy thumb navigation across all 6 core sections on phone screens.
+- 🛡️ **Notch & Safe Area Inset Support**: Camera cutouts, punch-holes, and dynamic islands are protected using `viewport-fit=cover`.
+- ⚡ **Universal Responsiveness**: Fluid layout seamlessly scaling from 320px compact phones up to 4K desktop screens.
+- 📲 **PWA Installation**: Open the website on Chrome/Safari and tap **"Install App"** to add Life-Hub to your home screen as a standalone app!
+
+---
+
 ## 🛠️ Technology Stack
 
 | Layer | Technologies |
 |---|---|
 | **Backend** | Python 3.14, FastAPI, SQLite with zero-friction schema migrations, Pydantic v2, Uvicorn |
 | **Frontend** | React 18, TypeScript, Vite, Tailwind CSS, Lucide React Icons |
-| **Audio & UX** | Web Audio API synthesizer for focus chimes, responsive glassmorphism dark mode |
-| **Data Engine** | Auto-seeded relational SQLite database with realistic seed data out-of-the-box |
+| **Mobile & PWA** | Web App Manifest, Service Worker offline caching, Edge-to-Edge display |
+| **Android Native** | Android SDK 34, Hardware-accelerated WebView wrapper, Gradle build scripts |
+| **CI/CD** | GitHub Actions automatic APK compilation & GitHub Pages deployment |
 
 ---
 
-## 🏁 Quick Start Guide
+## 🏁 Running Locally
 
-### Option A: One-Click Launch (Windows)
+### Option A: 1-Click Launch (Windows)
 Double-click `run_life_hub.bat` in `D:\Subrat\life_hub`.
-It starts both the FastAPI backend and Vite frontend, then automatically opens your browser at **http://localhost:3000**.
+It starts both the FastAPI backend and Vite frontend, then opens your browser at **http://localhost:3000**.
 
 ### Option B: Manual Terminal Execution
 
@@ -72,7 +100,6 @@ cd "D:\Subrat\life_hub\backend"
 python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
 - API Docs & Swagger UI: **http://127.0.0.1:8000/docs**
-- Health Check: **http://127.0.0.1:8000/api/health**
 
 #### 2. Start the Frontend
 In a new terminal window:
@@ -80,49 +107,4 @@ In a new terminal window:
 cd "D:\Subrat\life_hub\web"
 npm run dev
 ```
-- Access the web application: **http://localhost:3000**
-
----
-
-## 📂 Project Architecture
-
-```
-D:\Subrat\life_hub\
-├── backend\
-│   ├── app\
-│   │   ├── database.py       # SQLite connection, tables & realistic initial seeds
-│   │   ├── schemas.py        # Pydantic v2 schemas for all 5 domains
-│   │   ├── main.py           # FastAPI entrypoint, CORS & router registrations
-│   │   └── routers\
-│   │       ├── dashboard.py    # Harmony score & Smart Daily Briefing
-│   │       ├── productivity.py # Tasks, habits, streaks & focus sessions
-│   │       ├── energy.py       # Devices, power telemetry & automation rules
-│   │       ├── health.py       # Meals, macros, water & workout guides
-│   │       ├── finance.py      # Ledger, category budgets & cashflow
-│   │       └── community.py    # Mutual aid board, claims & karma points
-│   ├── life_hub.db           # SQLite database file
-│   └── requirements.txt
-├── web\
-│   ├── src\
-│   │   ├── api.ts            # Typed client API with automatic direct fallback
-│   │   ├── types.ts          # Complete TypeScript interfaces
-│   │   ├── App.tsx           # State orchestration, notifications & layouts
-│   │   ├── main.tsx          # React 18 bootstrap
-│   │   ├── index.css         # Animations & custom dark-theme scrollbars
-│   │   ├── components\
-│   │   │   └── Navbar.tsx      # Glassmorphic top navigation & status indicator
-│   │   └── views\
-│   │       ├── DashboardView.tsx     # Life Command Center
-│   │       ├── ProductivityView.tsx  # Time-boxing, tasks, habits & Pomodoro
-│   │       ├── EnergyView.tsx        # Smart appliances & power telemetry
-│   │       ├── HealthView.tsx        # Nutrition, hydration & workouts
-│   │       ├── FinanceView.tsx       # Ledger, budgets & savings rates
-│   │       └── CommunityView.tsx     # Neighborhood sharing & mutual aid
-│   ├── index.html            # Tailwind config & typography
-│   ├── package.json
-│   ├── tsconfig.json
-│   └── vite.config.ts        # Vite configuration with proxy to FastAPI
-├── run_life_hub.bat          # 1-Click double-clickable launcher
-├── run_life_hub.ps1          # PowerShell launcher
-└── README.md
-```
+- Web Application: **http://localhost:3000**
